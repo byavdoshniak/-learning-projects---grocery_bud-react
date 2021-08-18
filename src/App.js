@@ -13,6 +13,15 @@ function App() {
     alertText: '',
   })
 
+  useEffect(() => {
+    let jsonBud = localStorage.getItem('localeBud')
+    if (jsonBud) setBud(JSON.parse(jsonBud))
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('localeBud', JSON.stringify(bud))
+  })
+
   const submitHandler = (e) => {
     e.preventDefault()
     if (product) {
@@ -36,7 +45,6 @@ function App() {
   }
   const deleteHandler = (id) => {
     setBud(bud.filter((item) => id !== item.id))
-
     setAlert({
       isAlert: true,
       alertType: 'alert alert-danger',
