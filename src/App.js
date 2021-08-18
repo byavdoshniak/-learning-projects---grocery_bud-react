@@ -7,9 +7,11 @@ function App() {
   const [bud, setBud] = useState([])
   const [editCondition, setEditCondition] = useState(false)
   const [editedId, setEditedId] = useState('')
-  const [alertSuccess, setAlertSuccess] = useState(false)
-  const [alertDanger, setAlertDanger] = useState(false)
-  const [alertText, setAlertText] = useState('')
+  const [alert, setAlert] = useState({
+    isAlert: false,
+    alertType: '',
+    alertText: '',
+  })
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -18,23 +20,28 @@ function App() {
       setBud((bud) => {
         return [...bud, newitem]
       })
-      console.log(bud)
       setProduct('')
-      setAlertSuccess(true)
-      setAlertText('item added')
-      setTimeout(() => setAlertSuccess(false), 3000)
+      setAlert({
+        isAlert: true,
+        alertType: 'alert alert-success',
+        alertText: 'item added to the bud',
+      })
     } else {
-      setAlertDanger(true)
-      setAlertText('please enter value')
-      setTimeout(() => setAlertDanger(false), 3000)
+      setAlert({
+        isAlert: true,
+        alertType: 'alert alert-danger',
+        alertText: 'please enter value',
+      })
     }
   }
-
   const deleteHandler = (id) => {
     setBud(bud.filter((item) => id !== item.id))
-    setAlertDanger(true)
-    setAlertText('item deleted')
-    setTimeout(() => setAlertDanger(false), 3000)
+
+    setAlert({
+      isAlert: true,
+      alertType: 'alert alert-danger',
+      alertText: 'item deleted',
+    })
   }
 
   const editHandler = (id) => {
@@ -54,21 +61,26 @@ function App() {
         item.product = product
       }
       setProduct('')
-      setEditCondition(false)
-      setAlertSuccess(true)
-      setAlertText('item changed')
-      setTimeout(() => setAlertSuccess(false), 3000)
+      setAlert({
+        isAlert: true,
+        alertType: 'alert alert-success',
+        alertText: 'item changed',
+      })
+      setEditCondition(!editCondition)
     })
   }
+
+  useEffect(() => {
+    let timeout = setTimeout(() => setAlert({ isAlert: false }), 3000)
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [alert])
 
   return (
     <section className='section-center'>
       <form className='grocery-form' onSubmit={submitHandler}>
-        <Alert
-          alertSuccess={alertSuccess}
-          alertDanger={alertDanger}
-          text={alertText}
-        />
+        {alert.isAlert && <Alert alert={alert} />}
         <h3>grocery bud</h3>
         <div className='form-control'>
           <input
@@ -107,9 +119,11 @@ function App() {
             className='clear-btn'
             onClick={() => {
               setBud([])
-              setAlertDanger(true)
-              setAlertText('list cleared')
-              setTimeout(() => setAlertDanger(false), 3000)
+              setAlert({
+                isAlert: true,
+                alertType: 'alert alert-danger',
+                alertText: 'list cleared',
+              })
             }}
           >
             clear items
